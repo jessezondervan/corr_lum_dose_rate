@@ -1,7 +1,23 @@
 #### feldspar
 ### calculate the age based on a model for water content in terrace sediments
-##need file with input data
+##need file with input data, see example csv file
 fil = open('C:/Users/jzondervan/OneDrive - University of Plymouth/Risoe 03-06-2019/csv_corr_ages_IR50.csv')
+
+#set the following variables: water content error (fractional), grain attenuation of beta dose rates(fractional), 
+#internal dose rate (Gy/ky) and error (fractional), internal dose rate of feldspar (Gy/ky) and error (fractional), 
+# beta calibration error (fractional)
+
+wc_err = 0.04
+grain_att = 0.887355
+internal = 0.1
+internal_se = 0.05
+internal_fsp = 0.857
+internal_fsp_err = 0.041
+beta_calib = 0.02
+
+####################################################################################################
+# Function written by Jesse R. Zondervan - Updated : 24/06/19
+####################################################################################################
 
 fil.readline()
 
@@ -12,7 +28,6 @@ age_ends = []
 
 wc_sats = []
 wc_wets = []
-wc_err = 0.04
 
 gamma_drys = []
 g_ses = []
@@ -22,16 +37,9 @@ conglom_corrs = []
 
 external_gammas = []
 ext_ses = []
-grain_att = 0.887355
-internal = 0.1
-internal_se = 0.05
-internal_fsp = 0.857
-internal_fsp_err = 0.041
 
 Des = []
 De_ses = []
-
-beta_calib = 0.02
 
 for line in fil:
     sample_numbers.append(line.split(',')[0])
