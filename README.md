@@ -7,7 +7,7 @@ after which the wet water content measured in the lab is used to correct dose ra
 This code is written in Python 3
 
 # Usage
-1. Calculate the external gamma dose rate added to the samples by cosmic rays. This dependds on the altitude and geographical 
+1. Calculate the external gamma dose rate added to the samples by cosmic rays. This depends on the altitude and geographical 
 location of the samples, as well as the depth of samples. This can be done in standard luminescence spreadsheet, for example
 the one provided by Riso
 2. Complete a csv file with sample name, apriori age (optional), end of saturation age (time of water table lowering below the sample),
