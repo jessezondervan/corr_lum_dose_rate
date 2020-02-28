@@ -16,8 +16,10 @@ beta_calib = 0.02
 # Function written by Jesse R. Zondervan - Updated : 24/06/19
 ####################################################################################################
 
+#read the csv header
 fil.readline()
 
+#prepare lists
 sample_numbers = []
 
 age_samples = []
@@ -38,6 +40,7 @@ ext_ses = []
 Des = []
 De_ses = []
 
+#fill the lists using data in the csv:
 for line in fil:
     sample_numbers.append(line.split(',')[0])
     age_samples.append(float(line.split(',')[1]))
@@ -53,17 +56,23 @@ for line in fil:
     ext_ses.append(float(line.split(',')[11]))
     Des.append(float(line.split(',')[12]))
     De_ses.append(float(line.split(',')[13]))
-            
+
+#import numpy
 import numpy as np
 
+##for every sample calculate the ages of the samples using their dose, dry dose rates and by iteratively 
+#modelling the time of water saturation in the sediment
 for i in range(0,len(age_samples)):
     
+    #set the apriori sample age and the terrace abandonement age
     age_sample = age_samples[i]
     age_end = age_ends[i]
 
+    #set the water content measurements in percentages
     wc_sat = wc_sats[i]/100
     wc_wet = wc_wets[i]/100
 
+    #take the values for this sample out of the lists
     gamma_dry = gamma_drys[i]
     g_se = g_ses[i]
     beta_dry = beta_drys[i]
@@ -79,26 +88,34 @@ for i in range(0,len(age_samples)):
     De_se = De_ses[i]
 
 
+    #calculate the apriori amount of time the sample has been saturated and the time since abandonement during which
+    #the sediment is assumed to have a water content similar to the wet sediment measurement
     time_sat = age_sample - age_end
     time_wet = age_end
 
+    #calculate the attentuation of dose rates depending on the measured water contents of the sample
     wc_att_gamma_sat = 1/(1+(1.14*wc_sat))
     wc_att_gamma_wet = 1/(1+(1.14*wc_wet))
     wc_att_beta_sat = 1/(1+(1.25*wc_sat))
     wc_att_beta_wet = 1/(1+(1.25*wc_wet))
 
+    #calculate the attentuated gamma and beta rates for saturated and wet conditions
     gamma_sat = gamma_dry*wc_att_gamma_sat + external_gamma
     gamma_wet = gamma_dry*wc_att_gamma_wet + external_gamma
     beta_sat = beta_dry*wc_att_beta_sat * grain_att 
     beta_wet = beta_dry*wc_att_beta_wet * grain_att
 
+    #calculate the total rates for saturated and wet conditions
     tot_rate_sat = gamma_sat + beta_sat + internal
     tot_rate_wet = gamma_wet + beta_wet + internal
 
+    #calculate the average dose rate over the timespan of the terrace
     weighted_rate = (tot_rate_sat * (time_sat/age_sample)) + (tot_rate_wet * (time_wet/age_sample))
 
+    #calculate a corrected age for the sample
     age_corr = De/weighted_rate
 
+    #loop which continues the process iteratively until the correction is equal to or smaller than 2 kyr
     while abs(age_corr - age_sample) > 2:
         age_sample = age_corr
         time_sat = age_sample - age_end
@@ -109,13 +126,14 @@ for i in range(0,len(age_samples)):
         beta_sat = beta_dry*wc_att_beta_sat * grain_att 
         beta_wet = beta_dry*wc_att_beta_wet * grain_att
 
-        tot_rate_sat = gamma_sat + beta_sat
-        tot_rate_wet = gamma_wet + beta_wet
+        tot_rate_sat = gamma_sat + beta_sat + internal
+        tot_rate_wet = gamma_wet + beta_wet + internal
 
         weighted_rate = (tot_rate_sat * (time_sat/age_sample)) + (tot_rate_wet * (time_wet/age_sample))
 
         age_corr = De/weighted_rate
     
+    #carrying over the error on dry dose rates to the calculate dose rates
     gamma_sat_se = np.sqrt((g_se*wc_att_gamma_sat)**2+ext_se**2)
     beta_sat_se = b_se*wc_att_beta_sat*grain_att
     gamma_wet_se = np.sqrt((g_se*wc_att_gamma_wet)**2+ext_se**2)
