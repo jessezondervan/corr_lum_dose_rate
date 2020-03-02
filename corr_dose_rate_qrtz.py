@@ -176,8 +176,8 @@ for i in range(0,len(age_samples)):
         beta_sat = beta_dry*wc_att_beta_sat * grain_att 
         beta_wet = beta_dry*wc_att_beta_wet * grain_att
 
-        tot_rate_sat = gamma_sat + beta_sat
-        tot_rate_wet = gamma_wet + beta_wet
+        tot_rate_sat = gamma_sat + beta_sat + internal
+        tot_rate_wet = gamma_wet + beta_wet + internal
 
         weighted_rate_xtra = (tot_rate_sat * (time_sat/age_sample)) + (tot_rate_wet * (time_wet/age_sample))
 
