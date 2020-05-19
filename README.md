@@ -17,3 +17,5 @@ external gamma dose rate and the dose. See an example csv file, which you can do
 
 The output is a print out of the corrected luminescence ages and dose rates based on the water content model, and also gives the
 precision only error (leaving out systematic errors related to measurement uncertainties shared by all samples)
+
+[![DOI](https://zenodo.org/badge/193535834.svg)](https://zenodo.org/badge/latestdoi/193535834)
