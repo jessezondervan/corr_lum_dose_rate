@@ -13,7 +13,7 @@ internal_se = 0.01
 beta_calib = 0.02
 
 ####################################################################################################
-# Function written by Jesse R. Zondervan - Updated : 24/06/19
+# Function written by Jesse R. Zondervan - Updated : 08/12/20
 ####################################################################################################
 
 #read the csv header
