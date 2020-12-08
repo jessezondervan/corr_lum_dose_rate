@@ -33,6 +33,7 @@ g_ses = []
 beta_drys = []
 b_ses = []
 conglom_corrs = []
+conglom_corr_se = 0.15
 
 external_gammas = []
 ext_ses = []
@@ -188,7 +189,7 @@ for i in range(0,len(age_samples)):
     weighted_rate_se = np.sqrt(tot_rate_sat_se**2+tot_rate_wet_se**2)
     
     #Precision only error, meaning the error that comes out of measurements on multiple samples (De measurements, radiation measurements)
-    age_corr_se_prec_only = np.sqrt((De_se/De)**2+weighted_rate_se**2)*age_corr
+    age_corr_se_prec_only = np.sqrt((De_se/De)**2+weighted_rate_se**2+conglom_corr_se**2)*age_corr
     
     #All systematic error, including intstrument precision (beta calibration of Luminescence equipment, uncertainty in lab water content measurements).
     #These systematic errors are present in all samples, and are inlcuded in this measurement of total error.
