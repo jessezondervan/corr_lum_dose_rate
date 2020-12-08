@@ -80,6 +80,7 @@ for i in range(0,len(age_samples)):
     beta_dry = beta_drys[i]
     b_se = b_ses[i]
     conglom_corr = conglom_corrs[i]
+    conglom_corr_se = conglom_corr_ses[i]
     beta_dry = beta_dry *conglom_corr
     b_se = b_se*conglom_corr
 
