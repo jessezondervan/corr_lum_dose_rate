@@ -33,7 +33,7 @@ g_ses = []
 beta_drys = []
 b_ses = []
 conglom_corrs = []
-conglom_corr_se = 0.15
+conglom_corr_ses = []
 
 external_gammas = []
 ext_ses = []
@@ -53,10 +53,11 @@ for line in fil:
     beta_drys.append(float(line.split(',')[7]))
     b_ses.append(float(line.split(',')[8]))
     conglom_corrs.append(float(line.split(',')[9]))
-    external_gammas.append(float(line.split(',')[10]))
-    ext_ses.append(float(line.split(',')[11]))
-    Des.append(float(line.split(',')[12]))
-    De_ses.append(float(line.split(',')[13]))
+    conglom_corr_ses.append(float(line.split(',')[10]))
+    external_gammas.append(float(line.split(',')[11]))
+    ext_ses.append(float(line.split(',')[12]))
+    Des.append(float(line.split(',')[13]))
+    De_ses.append(float(line.split(',')[14]))
 
 #import numpy
 import numpy as np
@@ -189,11 +190,11 @@ for i in range(0,len(age_samples)):
     weighted_rate_se = np.sqrt(tot_rate_sat_se**2+tot_rate_wet_se**2)
     
     #Precision only error, meaning the error that comes out of measurements on multiple samples (De measurements, radiation measurements)
-    age_corr_se_prec_only = np.sqrt((De_se/De)**2+weighted_rate_se**2)*age_corr
+    age_corr_se_prec_only = np.sqrt((De_se/De)**2+weighted_rate_se**2+conglom_corr_se**2)*age_corr
     
     #All systematic error, including intstrument precision (beta calibration of Luminescence equipment, uncertainty in lab water content measurements).
     #These systematic errors are present in all samples, and are inlcuded in this measurement of total error.
-    age_corr_se_all = np.sqrt((De_se/De)**2+weighted_rate_se**2+beta_calib**2+wat_cont_err**2+conglom_corr_se**2)*age_corr
+    age_corr_se_all = np.sqrt((De_se/De)**2+weighted_rate_se**2+conglom_corr_se**2+beta_calib**2+wat_cont_err**2)*age_corr
     
     print (sample_numbers[i])
     print ('the corrected age is %.f +- %.f kyr (prec only error is %.f kyr)' % (age_corr, age_corr_se_all, age_corr_se_prec_only))
