@@ -1,7 +1,7 @@
 #### quartz
 ### calculate the age based on a model for water content in terrace sediments
 ##need file with input data, see example csv file
-fil = open('C:/Users/jzondervan/OneDrive - University of Plymouth/Risoe 03-06-2019/csv_corr_ages.csv')
+fil = open('C:/Users/zonde/OneDrive - University of Plymouth/Risoe 03-06-2019/csv_corr_ages.csv')
 
 #set the following variables: water content error (fractional), grain attenuation of beta dose rates(fractional), 
 #internal dose rate (Gy/ky) and error (fractional), beta calibration error (fractional)
@@ -13,7 +13,7 @@ internal_se = 0.01
 beta_calib = 0.02
 
 ####################################################################################################
-# Function written by Jesse R. Zondervan - Updated : 08/12/20
+# Function written by Jesse R. Zondervan - Updated : 09/12/20
 ####################################################################################################
 
 #read the csv header
@@ -82,7 +82,7 @@ for i in range(0,len(age_samples)):
     conglom_corr = conglom_corrs[i]
     conglom_corr_se = conglom_corr_ses[i]
     beta_dry = beta_dry *conglom_corr
-    b_se = b_se*conglom_corr
+    b_se = np.sqrt((b_se/beta_dry)**2+(conglom_corr_se/conglom_corr)**2)*beta_dry
 
     external_gamma = external_gammas[i]
     ext_se = ext_ses[i]
@@ -136,13 +136,13 @@ for i in range(0,len(age_samples)):
 
         age_corr = De/weighted_rate
     
-    #carrying over the error on dry dose rates to the calculate dose rates
-    gamma_sat_se = np.sqrt((g_se*wc_att_gamma_sat)**2+ext_se**2)
-    beta_sat_se = b_se*wc_att_beta_sat*grain_att
-    gamma_wet_se = np.sqrt((g_se*wc_att_gamma_wet)**2+ext_se**2)
-    beta_wet_se = b_se*wc_att_beta_wet*grain_att
-    tot_rate_sat_se = np.sqrt(gamma_sat_se**2+beta_sat_se**2+internal_se**2)
-    tot_rate_wet_se = np.sqrt(gamma_wet_se**2+beta_wet_se**2+internal_se**2)
+    #carrying over the error on dry dose rates to the calculated dose rates
+    gamma_sat_se = g_se*wc_att_gamma_sat+ext_se
+    beta_sat_se = b_se*wc_att_beta_sat * grain_att 
+    gamma_wet_se = g_se*wc_att_gamma_wet+ext_se
+    beta_wet_se = b_se*wc_att_beta_wet * grain_att
+    tot_rate_sat_se = gamma_sat_se + beta_sat_se + internal_se
+    tot_rate_wet_se = gamma_wet_se + beta_wet_se + internal_se
 
 
     #now calculate the water content error
@@ -188,14 +188,14 @@ for i in range(0,len(age_samples)):
     
     wat_cont_err = abs(age_corr_xtra-age_corr)/age_corr
 
-    weighted_rate_se = np.sqrt(tot_rate_sat_se**2+tot_rate_wet_se**2)
+    weighted_rate_se = np.sqrt((tot_rate_sat_se/tot_rate_sat)**2+(tot_rate_wet_se/tot_rate_wet)**2)
     
     #Precision only error, meaning the error that comes out of measurements on multiple samples (De measurements, radiation measurements)
-    age_corr_se_prec_only = np.sqrt((De_se/De)**2+weighted_rate_se**2+conglom_corr_se**2)*age_corr
+    age_corr_se_prec_only = np.sqrt((De_se/De)**2+(weighted_rate_se)**2)*age_corr
     
     #All systematic error, including intstrument precision (beta calibration of Luminescence equipment, uncertainty in lab water content measurements).
     #These systematic errors are present in all samples, and are inlcuded in this measurement of total error.
-    age_corr_se_all = np.sqrt((De_se/De)**2+weighted_rate_se**2+conglom_corr_se**2+beta_calib**2+wat_cont_err**2)*age_corr
+    age_corr_se_all = np.sqrt((De_se/De)**2+(weighted_rate_se)**2+beta_calib**2+wat_cont_err**2)*age_corr
     
     print (sample_numbers[i])
     print ('the corrected age is %.f +- %.f kyr (prec only error is %.f kyr)' % (age_corr, age_corr_se_all, age_corr_se_prec_only))
